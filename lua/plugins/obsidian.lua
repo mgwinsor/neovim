@@ -1,12 +1,15 @@
+vim.opt_local.conceallevel = 2
+
 return {
   'epwalsh/obsidian.nvim',
   version = '*', -- recommended, use latest release instead of latest commit
   lazy = true,
   keys = {
-    { '<leader>ns', '<cmd>ObsidianQuickSwitch<cr>', desc = 'Obsidian [N]otes [S]earch' },
+    { '<leader>nf', '<cmd>ObsidianQuickSwitch<cr>', desc = 'Obsidian [N]otes [F]ind' },
     { '<leader>nw', '<cmd>ObsidianWorkspace<cr>', desc = 'Obsidian [N]otes [W]orkspace switch ' },
     { '<leader>nn', '<cmd>ObsidianNew<cr>', desc = 'Obsidian [N]ew [N]ote' },
     { '<leader>nt', '<cmd>ObsidianTemplate<cr>', desc = 'Obsidian [N]ote [T]emplate' },
+    { '<leader>na', '<cmd>ObsidianTags<cr>', desc = 'Obsidian [N]ote T[A]gs' },
   },
 
   dependencies = {
@@ -19,7 +22,7 @@ return {
     workspaces = {
       {
         name = 'brain.db',
-        path = '~/notes/brain_db',
+        path = '~/notes/binarybrain',
       },
       {
         name = 'work',
@@ -27,13 +30,13 @@ return {
       },
     },
 
-    notes_subdir = '_inbox',
+    notes_subdir = 'the_archive',
     new_notes_location = 'notes_subdir',
     preferred_link_style = 'markdown',
     disable_frontmatter = false,
 
     daily_notes = {
-      folder = 'journal',
+      folder = 'captains_log',
       date_format = '%Y-%m-%d',
       default_tags = { 'journal' },
       template = nil,
@@ -81,6 +84,31 @@ return {
         end
       end
       return tostring(os.time()) .. '_' .. suffix
+    end,
+
+    -- Customize the frontmatter data
+    ---@return table
+    note_frontmatter_func = function(note)
+      -- Add the title of the note as an alias.
+      if note.title then
+        note:add_alias(note.title)
+      end
+
+      if next(note.tags) == nil then
+        note.tags = { 'inbox' }
+      end
+
+      local out = { id = note.id, aliases = note.aliases, tags = note.tags }
+
+      -- `note.metadata` contains any manually added fields in the frontmatter.
+      -- So here we just make sure those fields are kept in the frontmatter.
+      if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+        for k, v in pairs(note.metadata) do
+          out[k] = v
+        end
+      end
+
+      return out
     end,
 
     picker = {
