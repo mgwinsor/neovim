@@ -52,6 +52,8 @@ return {
 
       -- ... and there is more!
       --  Check out: https://github.com/echasnovski/mini.nvim
+      require('mini.misc').setup()
+      MiniMisc.setup_auto_root { '.git', '.vale.ini', '.venv', 'Makefile' }
     end,
   },
 }

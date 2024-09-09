@@ -208,7 +208,7 @@ return {
       vim.list_extend(ensure_installed, {
         'stylua', -- Used to format Lua code
         'ruff',
-        'mdformat',
+        'vale',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -255,8 +255,7 @@ return {
       end,
       formatters_by_ft = {
         lua = { 'stylua' },
-        python = { 'ruff', 'black', stop_after_first = true },
-        markdown = { 'mdformat' },
+        python = { 'ruff' },
 
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
