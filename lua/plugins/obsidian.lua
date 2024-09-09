@@ -3,7 +3,7 @@ return {
   version = '*', -- recommended, use latest release instead of latest commit
   lazy = true,
   keys = {
-    { '<leader>so', '<cmd>ObsidianQuickSwitch<cr>', desc = '[S]earch [O]bsidian notes' },
+    { '<leader>ns', '<cmd>ObsidianQuickSwitch<cr>', desc = 'Obsidian [N]otes [S]earch' },
     { '<leader>nw', '<cmd>ObsidianWorkspace<cr>', desc = 'Obsidian [N]otes [W]orkspace switch ' },
     { '<leader>nn', '<cmd>ObsidianNew<cr>', desc = 'Obsidian [N]ew [N]ote' },
     { '<leader>nt', '<cmd>ObsidianTemplate<cr>', desc = 'Obsidian [N]ote [T]emplate' },
