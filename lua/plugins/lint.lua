@@ -9,7 +9,7 @@ return {
         bash = { 'shellcheck' },
         yaml = { 'cfn_lint' },
         dockerfile = { 'hadolint' },
-        html = { 'htmlhint', 'tidy' },
+        -- html = { 'htmlhint', 'tidy' },
         markdown = { 'markdownlint', 'vale' },
       }
 

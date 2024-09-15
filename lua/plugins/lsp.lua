@@ -173,10 +173,10 @@ return {
               disableOrganizeImports = true,
             },
             python = {
-              analysis = {
-                ignore = { '*' },
-                typeCheckingMode = 'off',
-              },
+              -- analysis = {
+              --   ignore = { '*' },
+              --   typeCheckingMode = 'off',
+              -- },
               venvPath = '.',
               venv = '.venv',
             },
@@ -224,6 +224,7 @@ return {
         'ruff',
         'isort',
         'vale',
+        'prettier',
       })
       require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 
@@ -271,6 +272,7 @@ return {
       formatters_by_ft = {
         lua = { 'stylua' },
         python = { 'ruff_fix', 'ruff_format', 'isort' },
+        html = { 'prettierd', 'prettier', stop_after_first = true },
 
         -- You can use 'stop_after_first' to run the first available formatter from the list
         -- javascript = { "prettierd", "prettier", stop_after_first = true },
