@@ -7,7 +7,7 @@ return {
       local lint = require 'lint'
       lint.linters_by_ft = {
         bash = { 'shellcheck' },
-        yaml = { 'cfn_lint' },
+        -- yaml = { 'cfn_lint' },
         dockerfile = { 'hadolint' },
         -- html = { 'htmlhint', 'tidy' },
         markdown = { 'markdownlint', 'vale' },
