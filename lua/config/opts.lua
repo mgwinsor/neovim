@@ -88,9 +88,3 @@ vim.api.nvim_create_autocmd('BufEnter', {
     end
   end,
 })
-
-vim.filetype.add {
-  extension = {
-    hql = 'sql',
-  },
-}

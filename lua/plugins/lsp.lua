@@ -149,6 +149,11 @@ return {
             },
           },
         },
+        move_analyzer = {
+          cmd = { os.getenv 'HOME' .. '/.cargo/bin/move-analyzer' },
+          filetypes = { 'move' },
+          root_dir = require('lspconfig.util').root_pattern('Move.toml', '.git'),
+        },
         -- rust_analyzer = {},
         -- ... etc. See `:help lspconfig-all` for a list of all the pre-configured LSPs
         --
