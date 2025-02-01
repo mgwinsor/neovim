@@ -36,6 +36,10 @@ vim.opt.listchars = { tab = '» ', trail = '·', nbsp = '␣' }
 -- Preview substitutions live, as you type!
 vim.opt.inccommand = 'split'
 
+-- Spelling
+vim.opt.spelllang = 'en_us'
+vim.opt.spell = true
+
 -- Show which line your cursor is on
 vim.opt.cursorline = true
 
