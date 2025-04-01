@@ -89,16 +89,44 @@ return {
     -- Customize the frontmatter data
     ---@return table
     note_frontmatter_func = function(note)
-      -- Add the title of the note as an alias.
+      -- Function to convert string to Title Case
+      local function titleCase(str)
+        return str:gsub("(%a)([%w_']*)", function(first, rest)
+          return first:upper() .. rest:lower()
+        end)
+      end
+
+      -- Convert title to Title Case if it exists
       if note.title then
-        note:add_alias(note.title)
+        note.title = titleCase(note.title)
+        note.aliases = { note.title }
+      end
+
+      if note.draft == nil then
+        note.draft = true
       end
 
       if next(note.tags) == nil then
         note.tags = { 'inbox' }
       end
 
-      local out = { id = note.id, aliases = note.aliases, tags = note.tags }
+      if note.status == nil then
+        note.status = 'seedling'
+      end
+
+      if note.date == nil then
+        note.date = os.date '%Y-%m-%d'
+      end
+
+      local out = {
+        title = note.title,
+        id = note.id,
+        aliases = note.aliases,
+        status = note.status,
+        draft = note.draft,
+        tags = note.tags,
+        date = note.date,
+      }
 
       -- `note.metadata` contains any manually added fields in the frontmatter.
       -- So here we just make sure those fields are kept in the frontmatter.
