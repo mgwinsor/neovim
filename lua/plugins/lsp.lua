@@ -145,7 +145,11 @@ return {
               disableOrganizeImports = true,
             },
             python = {
-              pythonPath = '.venv/bin/python',
+              analysis = {
+                autoSearchPaths = true,
+                useLibraryCodeForTypes = true,
+                diagnosticMode = 'workspace',
+              },
             },
           },
         },
