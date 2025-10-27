@@ -1,15 +1,35 @@
 vim.opt_local.conceallevel = 2
 
 return {
-  'epwalsh/obsidian.nvim',
+  'obsidian-nvim/obsidian.nvim',
   version = '*', -- recommended, use latest release instead of latest commit
   lazy = true,
+  ft = 'markdown',
   keys = {
-    { '<leader>nf', '<cmd>ObsidianQuickSwitch<cr>', desc = 'Obsidian [N]otes [F]ind' },
-    { '<leader>nw', '<cmd>ObsidianWorkspace<cr>', desc = 'Obsidian [N]otes [W]orkspace switch ' },
-    { '<leader>nn', '<cmd>ObsidianNew<cr>', desc = 'Obsidian [N]ew [N]ote' },
-    { '<leader>nt', '<cmd>ObsidianTemplate<cr>', desc = 'Obsidian [N]ote [T]emplate' },
-    { '<leader>na', '<cmd>ObsidianTags<cr>', desc = 'Obsidian [N]ote T[A]gs' },
+    { '<leader>ns', '<cmd>Obsidian quick_switch<cr>', desc = 'Obsidian [N]otes [S]earch' },
+    { '<leader>nf', '<cmd>Obsidian follow_link vsplit<cr>', desc = 'Obsidian [N]otes [F]ollow link' },
+    { '<leader>nw', '<cmd>Obsidian workspace<cr>', desc = 'Obsidian [N]otes [W]orkspace switch' },
+    { '<leader>nn', '<cmd>Obsidian new<cr>', desc = 'Obsidian [N]ew [N]ote' },
+    { '<leader>nt', '<cmd>Obsidian template<cr>', desc = 'Obsidian [N]ote [T]emplate' },
+    { '<leader>na', '<cmd>Obsidian tags<cr>', desc = 'Obsidian [N]ote T[A]gs' },
+    { '<leader>nd', '<cmd>Obsidian today<cr>', desc = 'Obsidian [N]ote [D]aily' },
+    { '<leader>nb', '<cmd>Obsidian backlinks<cr>', desc = 'Obsidian [N]ote [B]acklinks' },
+    { '<leader>nl', '<cmd>Obsidian links<cr>', desc = 'Obsidian [N]ote [L]inks' },
+    -- Keymaps that need to be set for markdown files
+    {
+      'gf',
+      function()
+        if require('obsidian').util.cursor_on_markdown_link() then
+          return '<cmd>Obsidian follow_link vsplit<CR>'
+        else
+          return 'gf'
+        end
+      end,
+      ft = 'markdown',
+      expr = true,
+      desc = 'Obsidian follow link',
+    },
+    { '<leader>ch', '<cmd>Obsidian toggle_checkbox<CR>', ft = 'markdown', desc = 'Toggle checkbox' },
   },
 
   dependencies = {
@@ -21,16 +41,14 @@ return {
   opts = {
     workspaces = {
       {
-        name = 'brain.db',
+        name = 'binarybrain',
         path = '~/notes/binarybrain',
-      },
-      {
-        name = 'work',
-        path = '~/notes/work',
       },
     },
 
-    notes_subdir = 'the_archive',
+    legacy_commands = false,
+
+    notes_subdir = 'notes',
     new_notes_location = 'notes_subdir',
     preferred_link_style = 'markdown',
     disable_frontmatter = false,
@@ -39,7 +57,7 @@ return {
       folder = 'captains_log',
       date_format = '%Y-%m-%d',
       default_tags = { 'journal' },
-      template = nil,
+      template = 'daily-template.md',
     },
 
     completion = {
@@ -47,31 +65,7 @@ return {
       min_chars = 2,
     },
 
-    mappings = {
-      -- Overrides the 'gf' mapping to work on markdown/wiki links within your vault.
-      ['gf'] = {
-        action = function()
-          return require('obsidian').util.gf_passthrough()
-        end,
-        opts = { noremap = false, expr = true, buffer = true },
-      },
-      -- Toggle check-boxes.
-      ['<localleader>ch'] = {
-        action = function()
-          return require('obsidian').util.toggle_checkbox()
-        end,
-        opts = { buffer = true },
-      },
-      -- TODO: disable this smart action
-      ['<cr>'] = {
-        action = function()
-          return require('obsidian').util.smart_action()
-        end,
-        opts = { buffer = true, expr = true },
-      },
-    },
-
-    -- Generate IDs for new notes
+    -- Generate IDs for new notes with unix timestamp
     ---@param title string|?
     ---@return string
     note_id_func = function(title)
@@ -86,68 +80,68 @@ return {
       return tostring(os.time()) .. '_' .. suffix
     end,
 
-    -- Customize the frontmatter data
-    ---@return table
-    note_frontmatter_func = function(note)
-      -- Function to convert string to Title Case
-      local function titleCase(str)
-        return str:gsub("(%a)([%w_']*)", function(first, rest)
-          return first:upper() .. rest:lower()
-        end)
-      end
-
-      -- Convert title to Title Case if it exists
-      if note.title then
-        note.title = titleCase(note.title)
-        note.aliases = { note.title }
-      end
-
-      if note.draft == nil then
-        note.draft = true
-      end
-
-      if next(note.tags) == nil then
-        note.tags = { 'inbox' }
-      end
-
-      if note.status == nil then
-        note.status = 'seedling'
-      end
-
-      if note.date == nil then
-        note.date = os.date '%Y-%m-%d'
-      end
-
-      local out = {
-        title = note.title,
-        id = note.id,
-        aliases = note.aliases,
-        status = note.status,
-        draft = note.draft,
-        tags = note.tags,
-        date = note.date,
-      }
-
-      -- `note.metadata` contains any manually added fields in the frontmatter.
-      -- So here we just make sure those fields are kept in the frontmatter.
-      if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
-        for k, v in pairs(note.metadata) do
-          out[k] = v
+    -- Customize frontmatter
+    note_frontmatter = {
+      ---@return table
+      func = function(note)
+        local function titleCase(str)
+          return str:gsub("(%a)([%w_']*)", function(first, rest)
+            return first:upper() .. rest:lower()
+          end)
         end
-      end
 
-      return out
-    end,
+        -- Check if this is a daily note (captains_log instead of dailies)
+        local is_daily = note.path and note.path:match '/captains_log/'
+
+        if note.title then
+          note.title = titleCase(note.title)
+          note.aliases = { note.title }
+        end
+
+        -- Different defaults for daily notes
+        if is_daily then
+          note.draft = false -- dailies aren't drafts
+          note.tags = note.tags or { 'journal' }
+          note.status = nil -- dailies don't need status
+        else
+          note.draft = note.draft == nil and true or note.draft
+          note.tags = next(note.tags) == nil and { 'inbox' } or note.tags
+          note.status = note.status or 'seedling'
+        end
+
+        if note.date == nil then
+          note.date = os.date '%Y-%m-%d'
+        end
+
+        local out = {
+          title = note.title,
+          id = note.id,
+          aliases = note.aliases,
+          date = note.date,
+        }
+
+        -- Only add these fields for non-daily notes
+        if not is_daily then
+          out.status = note.status
+          out.draft = note.draft
+        end
+
+        out.tags = note.tags
+
+        if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+          for k, v in pairs(note.metadata) do
+            out[k] = v
+          end
+        end
+
+        return out
+      end,
+    },
 
     picker = {
-      -- Set your preferred picker. Can be one of 'telescope.nvim', 'fzf-lua', or 'mini.pick'.
       name = 'telescope.nvim',
-      -- Optional, configure key mappings for the picker. These are the defaults.
-      -- Not all pickers support all mappings.
       note_mappings = {
-        -- Create a new note from your query.
         new = '<C-x>',
-        -- Insert a link to the selected note.
         insert_link = '<C-l>',
       },
     },
@@ -160,6 +154,11 @@ return {
       folder = '_templates',
       date_format = '%Y-%m-%d-%a',
       time_format = '%H:%M',
+    },
+
+    ui = {
+      enable = true,
+      markdown_folding = true,
     },
   },
 }
