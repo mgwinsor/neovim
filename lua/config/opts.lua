@@ -72,6 +72,9 @@ vim.keymap.set('x', '<leader>p', '"_dP', { desc = 'Paste without copying' })
 vim.keymap.set('n', '<leader>d', [["_d]], { desc = 'Delete to void register' })
 vim.keymap.set('v', '<leader>d', [["_d]], { desc = 'Delete to void register' })
 
+-- create a new tab
+vim.keymap.set('n', '<leader>tn', '<cmd>tabnew<CR>', { desc = '[T]ab [N]ew' })
+
 -- [[ Basic Autocommands ]]
 --  See `:help lua-guide-autocommands`
 
