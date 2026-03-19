@@ -1,5 +1,65 @@
 vim.opt_local.conceallevel = 2
 
+---@param str string
+---@return string
+local function title_case(str)
+  return (str:gsub("(%a)([%w_']*)", function(first, rest)
+    return first:upper() .. rest:lower()
+  end))
+end
+
+---@param title string|?
+---@return string
+local function note_id(title)
+  local suffix = ''
+  if title ~= nil then
+    suffix = title:gsub(' ', '-'):gsub('[^A-Za-z0-9-]', ''):lower()
+  else
+    for _ = 1, 4 do
+      suffix = suffix .. string.char(math.random(65, 90))
+    end
+  end
+  return tostring(os.time()) .. '_' .. suffix
+end
+
+---@param note obsidian.Note
+---@return table
+local function note_frontmatter(note)
+  local is_daily = note.path and tostring(note.path):match '/captains_log/'
+
+  local raw_tags = note.tags or {}
+  local tags
+  if is_daily then
+    tags = #raw_tags > 0 and raw_tags or { 'journal' }
+  else
+    tags = #raw_tags > 0 and raw_tags or { 'inbox' }
+  end
+
+  local out = {
+    id = note.id,
+    aliases = { note.title:lower() } or note.aliases,
+    tags = tags,
+    date = note.metadata and note.metadata.date or os.date '%Y-%m-%d',
+  }
+
+  if not is_daily then
+    out.draft = note.metadata and note.metadata.draft ~= nil and note.metadata.draft or true
+    out.status = (note.metadata and note.metadata.status) or 'seedling'
+  end
+
+  if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
+    for k, v in pairs(note.metadata) do
+      if out[k] == nil then
+        out[k] = v
+      end
+    end
+  end
+
+  out.title = note.title and title_case(note.title) or note.title
+
+  return out
+end
+
 return {
   'obsidian-nvim/obsidian.nvim',
   version = '*', -- recommended, use latest release instead of latest commit
@@ -15,20 +75,6 @@ return {
     { '<leader>nd', '<cmd>Obsidian today<cr>', desc = 'Obsidian [N]ote [D]aily' },
     { '<leader>nb', '<cmd>Obsidian backlinks<cr>', desc = 'Obsidian [N]ote [B]acklinks' },
     { '<leader>nl', '<cmd>Obsidian links<cr>', desc = 'Obsidian [N]ote [L]inks' },
-    -- Keymaps that need to be set for markdown files
-    {
-      'gf',
-      function()
-        if require('obsidian').util.cursor_on_markdown_link() then
-          return '<cmd>Obsidian follow_link vsplit<CR>'
-        else
-          return 'gf'
-        end
-      end,
-      ft = 'markdown',
-      expr = true,
-      desc = 'Obsidian follow link',
-    },
     { '<leader>ch', '<cmd>Obsidian toggle_checkbox<CR>', ft = 'markdown', desc = 'Toggle checkbox' },
   },
 
@@ -53,8 +99,16 @@ return {
     link = {
       style = 'markdown',
     },
+
+    cache = {
+      enable = true,
+    },
+
+    note_id_func = note_id,
+
     frontmatter = {
       enabled = true,
+      func = note_frontmatter,
     },
 
     daily_notes = {
@@ -67,79 +121,6 @@ return {
     completion = {
       nvim_cmp = true,
       min_chars = 2,
-    },
-
-    -- Generate IDs for new notes with unix timestamp
-    ---@param title string|?
-    ---@return string
-    note_id_func = function(title)
-      local suffix = ''
-      if title ~= nil then
-        suffix = title:gsub(' ', '-'):gsub('[^A-Za-z0-9-]', ''):lower()
-      else
-        for _ = 1, 4 do
-          suffix = suffix .. string.char(math.random(65, 90))
-        end
-      end
-      return tostring(os.time()) .. '_' .. suffix
-    end,
-
-    -- Customize frontmatter
-    note_frontmatter = {
-      ---@return table
-      func = function(note)
-        local function titleCase(str)
-          return str:gsub("(%a)([%w_']*)", function(first, rest)
-            return first:upper() .. rest:lower()
-          end)
-        end
-
-        -- Check if this is a daily note (captains_log instead of dailies)
-        local is_daily = note.path and note.path:match '/captains_log/'
-
-        if note.title then
-          note.title = titleCase(note.title)
-          note.aliases = { note.title }
-        end
-
-        -- Different defaults for daily notes
-        if is_daily then
-          note.draft = false -- dailies aren't drafts
-          note.tags = note.tags or { 'journal' }
-          note.status = nil -- dailies don't need status
-        else
-          note.draft = note.draft == nil and true or note.draft
-          note.tags = next(note.tags) == nil and { 'inbox' } or note.tags
-          note.status = note.status or 'seedling'
-        end
-
-        if note.date == nil then
-          note.date = os.date '%Y-%m-%d'
-        end
-
-        local out = {
-          title = note.title,
-          id = note.id,
-          aliases = note.aliases,
-          date = note.date,
-        }
-
-        -- Only add these fields for non-daily notes
-        if not is_daily then
-          out.status = note.status
-          out.draft = note.draft
-        end
-
-        out.tags = note.tags
-
-        if note.metadata ~= nil and not vim.tbl_isempty(note.metadata) then
-          for k, v in pairs(note.metadata) do
-            out[k] = v
-          end
-        end
-
-        return out
-      end,
     },
 
     picker = {
