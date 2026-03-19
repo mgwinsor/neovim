@@ -50,9 +50,11 @@ return {
 
     notes_subdir = 'notes',
     new_notes_location = 'notes_subdir',
-    preferred_link_style = 'markdown',
+    link = {
+      style = 'markdown',
+    },
     frontmatter = {
-      enaabled = true,
+      enabled = true,
     },
 
     daily_notes = {
