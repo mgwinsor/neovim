@@ -24,6 +24,9 @@ vim.opt.updatetime = 250
 -- Displays which-key popup sooner
 vim.opt.timeoutlen = 300
 
+-- Time in milliseconds to wait for a mapped sequence to complete.
+vim.opt.ttimeoutlen = 10
+
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
