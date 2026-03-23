@@ -139,20 +139,7 @@ return {
       local servers = {
         -- clangd = {},
         gopls = {},
-        pyright = {
-          settings = {
-            pyright = {
-              disableOrganizeImports = true,
-            },
-            python = {
-              analysis = {
-                autoSearchPaths = true,
-                useLibraryCodeForTypes = true,
-                diagnosticMode = 'workspace',
-              },
-            },
-          },
-        },
+        ty = {},
         -- move_analyzer = {
         --   cmd = { os.getenv 'HOME' .. '/.cargo/bin/move-analyzer' },
         --   filetypes = { 'move' },
