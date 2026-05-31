@@ -1,4 +1,4 @@
-vim.opt_local.conceallevel = 2
+local gh = require('core.pack').gh
 
 ---@param str string
 ---@return string
@@ -60,90 +60,73 @@ local function note_frontmatter(note)
   return out
 end
 
-return {
-  'obsidian-nvim/obsidian.nvim',
-  version = '*', -- recommended, use latest release instead of latest commit
-  lazy = true,
-  event = { 'BufReadPre ' .. vim.fn.expand '~' .. '/notes/binarybrain/**.md' },
-  keys = {
-    { '<leader>ns', '<cmd>Obsidian quick_switch<cr>', desc = 'Obsidian [N]otes [S]earch' },
-    { '<leader>nf', '<cmd>Obsidian follow_link vsplit<cr>', desc = 'Obsidian [N]otes [F]ollow link' },
-    { '<leader>nw', '<cmd>Obsidian workspace<cr>', desc = 'Obsidian [N]otes [W]orkspace switch' },
-    { '<leader>nn', '<cmd>Obsidian new<cr>', desc = 'Obsidian [N]ew [N]ote' },
-    { '<leader>nt', '<cmd>Obsidian template<cr>', desc = 'Obsidian [N]ote [T]emplate' },
-    { '<leader>na', '<cmd>Obsidian tags<cr>', desc = 'Obsidian [N]ote T[A]gs' },
-    { '<leader>nd', '<cmd>Obsidian today<cr>', desc = 'Obsidian [N]ote [D]aily' },
-    { '<leader>nb', '<cmd>Obsidian backlinks<cr>', desc = 'Obsidian [N]ote [B]acklinks' },
-    { '<leader>nl', '<cmd>Obsidian links<cr>', desc = 'Obsidian [N]ote [L]inks' },
-    { '<leader>ch', '<cmd>Obsidian toggle_checkbox<CR>', ft = 'markdown', desc = 'Toggle checkbox' },
+vim.pack.add {
+  {
+    src = gh 'obsidian-nvim/obsidian.nvim',
+    version = vim.version.range '*',
   },
+}
 
-  dependencies = {
-    'nvim-lua/plenary.nvim',
-    'nvim-telescope/telescope.nvim',
-    'nvim-treesitter/nvim-treesitter',
+require('obsidian').setup {
+  legacy_commands = false,
+  workspaces = {
+    {
+      name = 'binarybrain',
+      path = '~/notes/binarybrain',
+    },
   },
-
-  opts = {
-    workspaces = {
-      {
-        name = 'binarybrain',
-        path = '~/notes/binarybrain',
-      },
+  notes_subdir = 'notes',
+  new_notes_location = 'notes_subdir',
+  link = {
+    style = 'markdown',
+  },
+  note_id_func = note_id,
+  frontmatter = {
+    enabled = true,
+    func = note_frontmatter,
+  },
+  daily_notes = {
+    folder = 'captains_log',
+    date_format = '%Y-%m-%d',
+    default_tags = { 'journal' },
+    template = 'daily-template.md',
+  },
+  picker = {
+    name = 'telescope.nvim',
+    note_mappings = {
+      new = '<C-x>',
+      insert_link = '<C-l>',
     },
-
-    legacy_commands = false,
-
-    notes_subdir = 'notes',
-    new_notes_location = 'notes_subdir',
-    link = {
-      style = 'markdown',
-    },
-
-    cache = {
-      enable = true,
-    },
-
-    note_id_func = note_id,
-
-    frontmatter = {
-      enabled = true,
-      func = note_frontmatter,
-    },
-
-    daily_notes = {
-      folder = 'captains_log',
-      date_format = '%Y-%m-%d',
-      default_tags = { 'journal' },
-      template = 'daily-template.md',
-    },
-
-    completion = {
-      nvim_cmp = true,
-      min_chars = 2,
-    },
-
-    picker = {
-      name = 'telescope.nvim',
-      note_mappings = {
-        new = '<C-x>',
-        insert_link = '<C-l>',
-      },
-    },
-
-    attachments = {
-      folder = '_assets/imgs',
-    },
-
-    templates = {
-      folder = '_templates',
-      date_format = '%Y-%m-%d-%a',
-      time_format = '%H:%M',
-    },
-
-    ui = {
-      enable = true,
-      markdown_folding = true,
+  },
+  attachments = {
+    folder = '_assets/imgs',
+  },
+  templates = {
+    folder = '_templates',
+    date_format = '%Y-%m-%d-%a',
+    time_format = '%H:%M',
+    substitutions = {
+      week_num = function()
+        return tostring(os.date '%V')
+      end,
+      weather = function()
+        local handle = io.popen "curl -s 'wttr.in/?format=%c+%t' 2>/dev/null"
+        local result = '⛅ Unknown'
+        if handle then
+          local content = handle:read '*a'
+          handle:close()
+          if content ~= '' and not content:find 'Error' then
+            result = content:gsub('%s+$', '')
+          end
+        end
+        return result
+      end,
     },
   },
 }
+
+vim.keymap.set('n', '<leader>os', '<cmd>Obsidian quick_switch<cr>', { desc = 'Obsidian [N]otes [S]earch' })
+vim.keymap.set('n', '<leader>on', '<cmd>Obsidian new<cr>', { desc = 'Obsidian [N]ew [N]ote' })
+vim.keymap.set('n', '<leader>ot', '<cmd>Obsidian template<cr>', { desc = 'Obsidian [N]ote [T]emplate' })
+vim.keymap.set('n', '<leader>oa', '<cmd>Obsidian tags<cr>', { desc = 'Obsidian [N]ote T[A]gs' })
+vim.keymap.set('n', '<leader>od', '<cmd>Obsidian dailies<cr>', { desc = 'Obsidian [N]ote [D]aily' })
