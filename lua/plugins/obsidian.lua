@@ -37,7 +37,7 @@ local function note_frontmatter(note)
 
   local out = {
     id = note.id,
-    aliases = { note.title:lower() } or note.aliases,
+    aliases = note.title and { note.title:lower() } or note.aliases,
     tags = tags,
     date = note.metadata and note.metadata.date or os.date '%Y-%m-%d',
   }
@@ -55,7 +55,9 @@ local function note_frontmatter(note)
     end
   end
 
-  out.title = note.title and title_case(note.title) or note.title
+  if note.title then
+    out.title = title_case(note.title)
+  end
 
   return out
 end

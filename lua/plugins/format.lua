@@ -8,7 +8,7 @@ require('conform').setup {
       go = true,
       html = true,
       lua = true,
-      markdown = true,
+      markdown = false,
       javascript = true,
       python = true,
       rust = true,
