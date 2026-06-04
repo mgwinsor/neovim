@@ -108,7 +108,7 @@ vim.list_extend(ensure_installed, {
   'htmlhint',
   'isort',
   'jsonlint',
-  'markdownlint',
+  'markdownlint-cli2',
   'mdformat',
   'prettierd',
   'ruff',
