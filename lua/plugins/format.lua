@@ -27,7 +27,7 @@ require('conform').setup {
     lua = { 'stylua' },
     markdown = { 'mdformat' },
     javascript = { 'prettierd', 'prettier', stop_after_first = true },
-    python = { 'isort', 'ruff_format' },
+    python = { 'ruff_organize_imports', 'ruff_fix', 'ruff_format' },
     rust = { 'rustfmt' },
     typescript = { 'prettierd', 'prettier', stop_after_first = true },
   },

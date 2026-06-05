@@ -106,7 +106,6 @@ vim.list_extend(ensure_installed, {
   'goimports',
   'hadolint',
   'htmlhint',
-  'isort',
   'jsonlint',
   'markdownlint-cli2',
   'mdformat',
