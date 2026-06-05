@@ -10,6 +10,8 @@ local parsers = {
   'go',
   'html',
   'javascript',
+  'json',
+  'latex',
   'lua',
   'luadoc',
   'markdown',
@@ -20,6 +22,7 @@ local parsers = {
   'sql',
   'vim',
   'vimdoc',
+  'yaml',
 }
 require('nvim-treesitter').install(parsers)
 

@@ -93,6 +93,8 @@ require('obsidian').setup {
     default_tags = { 'journal' },
     template = 'daily-template.md',
   },
+  ---@diagnostic disable-next-line: missing-fields
+  ui = { enable = false },
   picker = {
     name = 'telescope.nvim',
     note_mappings = {
