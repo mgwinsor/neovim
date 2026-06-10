@@ -4,7 +4,11 @@ vim.pack.add { 'https://github.com/windwp/nvim-autopairs' }
 require('nvim-autopairs').setup {}
 
 vim.pack.add { { src = gh 'L3MON4D3/LuaSnip', version = vim.version.range '2.*' } }
-require('luasnip').setup {}
+local ls = require 'luasnip'
+ls.setup {}
+ls.add_snippets('markdown', {
+  ls.parser.parse_snippet('md103', '<!-- markdownlint-disable-next-line MD013 -->'),
+})
 
 vim.pack.add { gh 'rafamadriz/friendly-snippets' }
 require('luasnip.loaders.from_vscode').lazy_load()
