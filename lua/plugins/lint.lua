@@ -5,8 +5,9 @@ local lint = require 'lint'
 lint.linters_by_ft = {
   dockerfile = { 'hadolint' },
   html = { 'htmlhint' },
-  markdown = { 'markdownlint-cli2' },
   json = { 'jsonlint' },
+  markdown = { 'markdownlint-cli2' },
+  python = { 'ruff' },
   yaml = { 'yamllint' },
 }
 
