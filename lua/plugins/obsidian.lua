@@ -35,9 +35,28 @@ local function note_frontmatter(note)
     tags = #raw_tags > 0 and raw_tags or { 'inbox' }
   end
 
+  local aliases = {}
+  if note.title then
+    aliases = { note.title:lower() }
+  end
+  if note.aliases then
+    for _, alias in ipairs(note.aliases) do
+      local found = false
+      for _, existing in ipairs(aliases) do
+        if existing:lower() == alias:lower() then
+          found = true
+          break
+        end
+      end
+      if not found then
+        table.insert(aliases, alias)
+      end
+    end
+  end
+
   local out = {
     id = note.id,
-    aliases = note.title and { note.title:lower() } or note.aliases,
+    aliases = aliases,
     tags = tags,
     date = note.metadata and note.metadata.date or os.date '%Y-%m-%d',
   }

@@ -3,3 +3,6 @@ config:
   default: true
   MD025:
     front_matter_title: ""
+  MD013:
+    code_blocks: false
+    tables: false
