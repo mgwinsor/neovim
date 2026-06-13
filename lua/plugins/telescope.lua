@@ -13,8 +13,16 @@ end
 vim.pack.add(telescope_plugins)
 
 require('telescope').setup {
+  defaults = {
+    file_ignore_patterns = { "%.git/", "%.venv/" },
+  },
   extensions = {
     ['ui-select'] = { require('telescope.themes').get_dropdown() },
+  },
+  pickers = {
+    find_files = {
+      hidden = true,
+    },
   },
 }
 
