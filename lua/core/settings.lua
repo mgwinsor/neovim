@@ -27,6 +27,7 @@ vim.o.scrolloff = 8
 vim.o.confirm = true
 vim.o.spell = true
 vim.o.spelllang = 'en_us'
+vim.o.winblend = 10
 
 -- Sync clipboard between OS and Neovim.
 --  Schedule the setting after `UiEnter` because it can increase startup-time.
