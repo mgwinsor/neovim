@@ -59,7 +59,7 @@ local function note_frontmatter(note)
     aliases = aliases,
     tags = tags,
     date = note.metadata and note.metadata.date or os.date '%Y-%m-%d',
-    last_updated = os.date '%Y-%m-%d',
+    updated = os.date '%Y-%m-%d',
   }
 
   if not is_daily then
@@ -93,7 +93,7 @@ require('obsidian').setup {
   legacy_commands = false,
   callbacks = {
     pre_write_note = function(note)
-      note:add_field('last_updated', os.date '%Y-%m-%d')
+      note:add_field('updated', os.date '%Y-%m-%d')
     end,
   },
   workspaces = {
