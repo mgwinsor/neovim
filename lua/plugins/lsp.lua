@@ -108,10 +108,8 @@ vim.list_extend(ensure_installed, {
   'htmlhint',
   'jsonlint',
   'markdownlint-cli2',
-  'mdformat',
   'prettierd',
   'ruff',
-  'yamllint',
 })
 require('mason-tool-installer').setup { ensure_installed = ensure_installed }
 for name, server in pairs(servers) do
