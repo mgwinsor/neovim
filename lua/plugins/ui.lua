@@ -10,10 +10,6 @@ if vim.g.have_nerd_font then
   vim.pack.add { gh 'nvim-tree/nvim-web-devicons' }
 end
 
-vim.pack.add { gh 'folke/twilight.nvim' }
-require('twilight').setup {}
-vim.keymap.set('n', '<leader>tt', '<Cmd>Twilight<CR>', { desc = '[T]oggle [T]wilight' })
-
 vim.pack.add { gh 'folke/which-key.nvim' }
 require('which-key').setup {
   preset = 'helix',
