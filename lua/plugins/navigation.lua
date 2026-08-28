@@ -6,20 +6,33 @@ local plugins = {
   gh 'MunifTanjim/nui.nvim',
   gh 'stevearc/oil.nvim',
   gh 'christoomey/vim-tmux-navigator',
+  gh 'aimdevlee/herdr-nvim-nav',
 }
 
 if vim.g.have_nerd_font then
   table.insert(plugins, gh 'nvim-tree/nvim-web-devicons')
 end
 
+vim.g.tmux_navigator_no_mappings = 1
+
 vim.pack.add(plugins)
 
 vim.keymap.set('n', '\\', '<Cmd>Neotree float<CR>', { desc = 'NeoTree float', silent = true })
 vim.keymap.set('n', '-', '<Cmd>Oil<CR>', { desc = 'Oil explorer' })
-vim.keymap.set('n', '<c-h>', '<Cmd>TmuxNavigateLeft<cr>', { desc = 'Tmux navigate left' })
-vim.keymap.set('n', '<c-j>', '<Cmd>TmuxNavigateDown<cr>', { desc = 'Tmux navigate down' })
-vim.keymap.set('n', '<c-k>', '<Cmd>TmuxNavigateUp<cr>', { desc = 'Tmux navigate up' })
-vim.keymap.set('n', '<c-l>', '<Cmd>TmuxNavigateRight<cr>', { desc = 'Tmux navigate right' })
+
+require('herdr-nvim-nav').setup {
+  with_tmux = nil,
+  keymaps = {
+    left = { '<C-h>', '<C-Left>' },
+    down = { '<C-j>', '<C-Down>' },
+    up = { '<C-k>', '<C-Up>' },
+    right = { '<C-l>', '<C-Right>' },
+  },
+  socket_path = nil,
+  cache_dir = nil,
+  herdr_bin = nil,
+  socket_timeout_ms = 150,
+}
 
 require('neo-tree').setup {
   filesystem = {
