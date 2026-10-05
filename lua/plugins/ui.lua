@@ -28,6 +28,7 @@ require('which-key').setup {
     { '<leader>dL', '<cmd>Trouble loclist toggle<cr>', desc = 'Location List', icon = '' },
     { '<leader>dQ', '<cmd>Trouble qflist toggle<cr>', desc = 'Quickfix List', icon = '' },
     { '<leader>a', group = '[A]I', icon = '󰚩' },
+    { '<leader>p', group = 'Copy File [P]ath', icon = '' },
     { '<leader>h', group = 'Git [H]unk', mode = { 'n', 'v' } },
     { 'gr', group = 'LSP Actions', icon = '', mode = { 'n' } },
     {
